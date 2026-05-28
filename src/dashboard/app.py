@@ -60,7 +60,7 @@ if st.session_state.live_mode and not st.session_state.hold_live:
     st.session_state.current_cycle = min(live_cycle, MAX_CYCLE)
 
 if not st.session_state.hold_live:
-    st_autorefresh(interval=2000, key="live_refresh")
+    st_autorefresh(interval=10000, key="live_refresh")
 
 # ── Plotly template (respects light/dark mode toggle) ─────────────────────────
 _PT = "plotly_white" if st.session_state.light_mode else "plotly_dark"
