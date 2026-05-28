@@ -2,12 +2,12 @@
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-orange?logo=pytorch)](https://pytorch.org)
-[![Streamlit](https://img.shields.io/badge/Streamlit-Live%20Demo-red?logo=streamlit)](https://YOUR-APP.streamlit.app)
+[![Streamlit](https://img.shields.io/badge/Streamlit-Live%20Demo-red?logo=streamlit)](https://xai-predictive-maintenance.streamlit.app/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
 > A real-time predictive maintenance system that predicts the **Remaining Useful Life (RUL)** of turbofan engines and explains *why*, sensor by sensor, cycle by cycle.
 
-**Live Demo → [Launch Dashboard](https://YOUR-APP.streamlit.app)**
+**Live Demo → [Launch Dashboard](https://xai-predictive-maintenance.streamlit.app/)**
 
 ---
 
@@ -103,7 +103,7 @@ xai_predictive_maintenance/
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/xai_predictive_maintenance.git
+git clone https://github.com/mostafah404/xai-predictive-maintenance.git
 cd xai_predictive_maintenance
 pip install -r requirements.txt
 ```
