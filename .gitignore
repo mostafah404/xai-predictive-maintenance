@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Environment
+.env
+.venv
+env/
+venv/
+.conda/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Large files we don't want tracked
+Presentation.pdf
+thesis/
+*.zip
+
+# Thesis LaTeX build artifacts (keep .tex sources, not compiled output)
+Thesis_Report/*.pdf
+Thesis_Report/*.aux
+Thesis_Report/*.log
+Thesis_Report/*.out
+Thesis_Report/*.toc
+Thesis_Report/*.synctex.gz
+Thesis_Report/*.fls
+Thesis_Report/*.fdb_latexmk
+Thesis_Report/*.blg
+Thesis_Report/*.bbl
+
+# Keep data and models (they are small enough)
+# data/ is intentionally NOT ignored
