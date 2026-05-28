@@ -150,6 +150,12 @@ with st.sidebar.expander("📖 Glossary"):
     for _term, _defn in _GLOSSARY:
         st.markdown(f"**{_term}** — {_defn}")
 
+# ── Anti-flicker CSS — always injected (fixes blinking on Streamlit Cloud) ────
+st.markdown("""<style>
+[data-stale="true"] { opacity: 1 !important; visibility: visible !important; }
+[data-testid="stSkeleton"] { display: none !important; }
+</style>""", unsafe_allow_html=True)
+
 # ── Light mode CSS injection ───────────────────────────────────────────────────
 if st.session_state.light_mode:
     st.markdown("""<style>
@@ -158,9 +164,6 @@ section[data-testid="stSidebar"] > div { background-color: #e8eaf0 !important; }
 .stMarkdown p, .stMarkdown li, label { color: #1a1a2e !important; }
 h1, h2, h3, h4 { color: #1a1a2e !important; }
 .stTabs [data-baseweb="tab"] { background-color: #e0e4ef !important; color: #1a1a2e !important; }
-/* Prevent blackout flash during autorefresh */
-[data-stale="true"] { opacity: 1 !important; visibility: visible !important; }
-[data-testid="stSkeleton"] { display: none !important; }
 </style>""", unsafe_allow_html=True)
 
 # ── Main title + live controls ─────────────────────────────────────────────────
