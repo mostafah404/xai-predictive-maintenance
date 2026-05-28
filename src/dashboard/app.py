@@ -1,5 +1,6 @@
 import io
 import streamlit as st
+import streamlit.components.v1 as components
 import plotly.graph_objects as go
 import numpy as np
 import pandas as pd
@@ -37,13 +38,14 @@ def _cached_lrp_ig_cnn(machine_id, cycle_number):
 # ── Session state defaults ────────────────────────────────────────────────────
 _t = time.time()
 for _k, _v in [
-    ("current_cycle", 50),
-    ("last_update",   _t),
-    ("start_time",    _t),
-    ("live_mode",     True),
-    ("hold_live",     False),
-    ("prev_halt",     False),
-    ("light_mode",    False),
+    ("current_cycle",    50),
+    ("last_update",      _t),
+    ("start_time",       _t),
+    ("live_mode",        True),
+    ("hold_live",        False),
+    ("prev_halt",        False),
+    ("light_mode",       False),
+    ("prev_high_engines", set()),
 ]:
     if _k not in st.session_state:
         st.session_state[_k] = _v
@@ -90,6 +92,32 @@ if len(_badge_fleet) > 0:
     _nb_high = int((_badge_fleet["Risk_Label"] == "HIGH").sum())
     _nb_med  = int((_badge_fleet["Risk_Label"] == "MEDIUM").sum())
     _nb_low  = int((_badge_fleet["Risk_Label"] == "LOW").sum())
+
+    # ── Detect engines that just entered the HIGH-risk zone ────────────────
+    # Only build the alert data here; the components.html() call is at the
+    # very bottom of the script so the Streamlit widget tree stays stable
+    # regardless of whether there are new HIGH engines this rerun.
+    _cur_high = set(_badge_fleet[_badge_fleet["Risk_Label"] == "HIGH"]["Machine_ID"].tolist())
+    _new_high = _cur_high - st.session_state.prev_high_engines
+    _alert_entries_js = ""
+    _show_alert = False
+    if _new_high:
+        _show_alert = True
+        _entries_html = ""
+        for _eid in sorted(_new_high):
+            _row = _badge_fleet[_badge_fleet["Machine_ID"] == _eid].iloc[0]
+            _rul = round(float(_row["Predicted_RUL"]))
+            _entries_html += (
+                "<div style='margin-bottom:12px;padding-bottom:12px;"
+                "border-bottom:1px solid rgba(255,255,255,0.2);'>"
+                f"<div style='font-size:17px;font-weight:700;margin-bottom:4px;'>"
+                f"🚨 Engine {_eid} entered HIGH RISK zone</div>"
+                f"<div style='font-size:13px;opacity:0.85;'>"
+                f"Predicted RUL: <strong>{_rul} cycles</strong></div>"
+                "</div>"
+            )
+        _alert_entries_js = _entries_html.replace("\\", "\\\\").replace("'", "\\'")
+    st.session_state.prev_high_engines = _cur_high
     st.sidebar.markdown("---")
     st.sidebar.markdown(
         f"""<div style="padding:10px 4px 4px;">
@@ -130,6 +158,9 @@ section[data-testid="stSidebar"] > div { background-color: #e8eaf0 !important; }
 .stMarkdown p, .stMarkdown li, label { color: #1a1a2e !important; }
 h1, h2, h3, h4 { color: #1a1a2e !important; }
 .stTabs [data-baseweb="tab"] { background-color: #e0e4ef !important; color: #1a1a2e !important; }
+/* Prevent blackout flash during autorefresh */
+[data-stale="true"] { opacity: 1 !important; visibility: visible !important; }
+[data-testid="stSkeleton"] { display: none !important; }
 </style>""", unsafe_allow_html=True)
 
 # ── Main title + live controls ─────────────────────────────────────────────────
@@ -164,7 +195,7 @@ def _tooltip(text, tip):
 
 
 def highlight_rows_fleet(row):
-    """Pandas Styler — colour full row by Risk_Label."""
+    """Pandas Styler — color full row by Risk_Label."""
     risk = row.get("Risk_Label", "")
     if risk == "HIGH":
         bg = "background-color:rgba(230,57,70,0.28)"      # red
@@ -598,7 +629,7 @@ def _render_home_tab(fleet_df, prefix="lstm", curve_fn=None):
     # ── Top 10 critical bar chart ─────────────────────────────────────────────
     st.markdown("## Most Critical Engines")
     top10 = fleet_df.sort_values("Predicted_RUL").head(10)
-    # Colour by risk level — hex codes are more reliable across templates
+    # Color by risk level — hex codes are more reliable across templates
     colors = [
         "#e63946" if r == "HIGH" else "#3a7bd5" if r == "MEDIUM" else "#22c55e"
         for r in top10["Risk_Label"]
@@ -637,7 +668,7 @@ RUL: <b>{eng_row['Predicted_RUL']:.0f} cycles</b></p>
                     unsafe_allow_html=True,
                 )
 
-    # ── Colour-coded fleet table ──────────────────────────────────────────────
+    # ── Color-coded fleet table ──────────────────────────────────────────────
     styled_table = top10.style.apply(highlight_rows_fleet, axis=1)
     st.dataframe(styled_table, use_container_width=True, hide_index=True)
 
@@ -658,10 +689,10 @@ def _render_ops_tab(fleet_df, prefix="lstm"):
                  str(int((fleet_df["Risk_Label"] == "HIGH").sum())),
                  "🔴", "#e63946", "rgba(230,57,70,0.12)")
 
-    # ── Fleet table with colour-coded rows ────────────────────────────────────
+    # ── Fleet table with color-coded rows ────────────────────────────────────
     st.markdown("## 🚨 Fleet Engine Status")
     st.markdown(
-        'Colour key:&nbsp;'
+        'Color key:&nbsp;'
         '<span style="background:#e63946;color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;">HIGH</span>&nbsp;'
         '<span style="background:#3a7bd5;color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;">MEDIUM</span>&nbsp;'
         '<span style="background:#22c55e;color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;">LOW</span>',
@@ -1169,7 +1200,7 @@ def _render_perf_tab_cnn(fleet_df):
                 )
                 st.plotly_chart(fig_cnn_xai, use_container_width=True, key="cnn_xai_scatter")
                 corr_val = cnn_xai_data["corr"]
-                colour   = "#22c55e" if corr_val >= 0.7 else "#f4a261" if corr_val >= 0.4 else "#e63946"
+                color   = "#22c55e" if corr_val >= 0.7 else "#f4a261" if corr_val >= 0.4 else "#e63946"
                 st.metric(
                     "Spearman Correlation (LRP vs IG)",
                     f"{corr_val:.3f}",
@@ -1186,13 +1217,13 @@ def _render_perf_tab_cnn(fleet_df):
 # ══════════════════════════════════════════════════════════════════════════════
 # TAB STRUCTURE — badge counts from early fleet computation
 # ══════════════════════════════════════════════════════════════════════════════
-_n_high_tab = _nb_high if len(_badge_fleet) > 0 else 0
-_high_str   = f" 🔴×{_n_high_tab}" if _n_high_tab > 0 else ""
-
+# Tab labels are kept static so Streamlit treats them as the same widget
+# across every rerun — dynamic labels (e.g. _high_str) caused the active
+# tab to reset to Home whenever the HIGH-risk count changed.
 tab1, tab2, tab3, tab4 = st.tabs([
     "🏠 Home",
-    f"🔧 Maintenance Engineer{_high_str}",
-    f"📊 Operations Manager{_high_str}",
+    "🔧 Maintenance Engineer",
+    "📊 Operations Manager",
     "📈 Model Performance",
 ])
 
@@ -1402,9 +1433,9 @@ with tab2:
         if result_cnn is None:
             st.warning("Not enough data for the most urgent engine.")
         else:
-            # ── Activation Maximisation ───────────────────────────────────────
+            # ── Activation Maximization ───────────────────────────────────────
             st.markdown(
-                f"### {_tooltip('🧠 Activation Maximisation', 'Gradient ascent finds the synthetic input pattern that maximises the CNN predicted RUL — showing what a perfectly healthy engine looks like according to the model')} — CNN's Ideal Healthy Engine",
+                f"### {_tooltip('🧠 Activation Maximization', 'Gradient ascent finds the synthetic input pattern that maximizes the CNN predicted RUL — showing what a perfectly healthy engine looks like according to the model')} — CNN's Ideal Healthy Engine",
                 unsafe_allow_html=True,
             )
             st.caption(
@@ -1430,7 +1461,7 @@ with tab2:
                 ))
                 fig_am.update_layout(
                     template=_PT, height=650,
-                    title="Activation Maximisation — Ideal Healthy Input<br>"
+                    title="Activation Maximization — Ideal Healthy Input<br>"
                           "<sup>Green = CNN wants HIGH · Red = CNN wants LOW</sup>",
                 )
                 st.plotly_chart(fig_am, use_container_width=True, key="cnn_act_max_hm")
@@ -1467,7 +1498,7 @@ with tab2:
             # ── Healthy Mode Recommendations ──────────────────────────────────
             st.markdown(f"### 🎯 Healthy Mode Recommendations — Engine {most_urgent_cnn}")
             st.caption(
-                "Based on Activation Maximisation: what sensor adjustments would "
+                "Based on Activation Maximization: what sensor adjustments would "
                 "move this engine closer to the CNN's 'ideal healthy' profile."
             )
             try:
@@ -1724,3 +1755,67 @@ with tab4:
             st.warning("No engines available yet.")
             st.stop()
         _render_perf_tab_cnn(_perf_fleet_cnn)
+
+# ── HIGH-risk popup alert ──────────────────────────────────────────────────────
+# Rendered unconditionally at the end so the Streamlit widget tree is always
+# the same shape — a conditional component earlier in the script would shift
+# the index of st.tabs() and reset the active tab to Home on every rerun.
+# The JS simply returns early when there is nothing to show.
+components.html(
+    "<!DOCTYPE html><html><head></head><body><script>"
+    "(function() {"
+    "  if (!" + ("true" if _show_alert else "false") + ") return;"
+    "  var pdoc = window.parent.document;"
+    "  var old  = pdoc.getElementById('pm-high-alert');"
+    "  if (old) old.remove();"
+    "  if (!pdoc.getElementById('pm-alert-style')) {"
+    "    var styleEl = pdoc.createElement('style');"
+    "    styleEl.id  = 'pm-alert-style';"
+    "    styleEl.textContent = '@keyframes pmSlideIn{from{opacity:0;transform:translateX(70px)}to{opacity:1;transform:translateX(0)}}';"
+    "    pdoc.head.appendChild(styleEl);"
+    "  }"
+    "  var popup = pdoc.createElement('div');"
+    "  popup.id  = 'pm-high-alert';"
+    "  popup.style.cssText = ["
+    "    'position:fixed','top:72px','right:24px','width:370px',"
+    "    'max-width:calc(100vw - 48px)',"
+    "    'background:linear-gradient(145deg,#7f1d1d,#b91c1c,#dc2626)',"
+    "    'color:#fff','border-radius:16px','padding:24px 26px',"
+    "    'z-index:2147483647',"
+    "    'box-shadow:0 12px 48px rgba(127,29,29,0.75),0 0 0 1px rgba(255,80,80,0.3)',"
+    "    'border-left:6px solid #ff4040',"
+    "    'font-family:Arial,sans-serif','font-size:14px',"
+    "    'animation:pmSlideIn 0.35s cubic-bezier(.22,.68,0,1.2) both'"
+    "  ].join(';');"
+    "  var hdr = pdoc.createElement('div');"
+    "  hdr.style.cssText = 'font-size:10px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;opacity:0.65;margin-bottom:16px;';"
+    "  hdr.textContent = '⚠️  Fleet Alert';"
+    "  popup.appendChild(hdr);"
+    "  var entries = pdoc.createElement('div');"
+    "  entries.innerHTML = '" + _alert_entries_js + "';"
+    "  popup.appendChild(entries);"
+    "  var btnRow = pdoc.createElement('div');"
+    "  btnRow.style.cssText = 'display:flex;gap:10px;margin-top:18px;';"
+    "  var homeBtn = pdoc.createElement('button');"
+    "  homeBtn.textContent = '🏠 Go to Home';"
+    "  homeBtn.style.cssText = 'flex:1;background:#fff;color:#9b1c1c;border:none;border-radius:9px;padding:11px 14px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);';"
+    "  var dismissBtn = pdoc.createElement('button');"
+    "  dismissBtn.textContent = '✕ Dismiss';"
+    "  dismissBtn.style.cssText = 'background:rgba(255,255,255,0.12);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:9px;padding:11px 14px;font-size:13px;cursor:pointer;';"
+    "  btnRow.appendChild(homeBtn);"
+    "  btnRow.appendChild(dismissBtn);"
+    "  popup.appendChild(btnRow);"
+    "  pdoc.body.appendChild(popup);"
+    "  var timer = setTimeout(function() { popup.remove(); }, 12000);"
+    "  homeBtn.addEventListener('click', function() {"
+    "    var tabs = pdoc.querySelectorAll('button[data-baseweb=\"tab\"]');"
+    "    if (tabs && tabs[0]) tabs[0].click();"
+    "    popup.remove(); clearTimeout(timer);"
+    "  });"
+    "  dismissBtn.addEventListener('click', function() {"
+    "    popup.remove(); clearTimeout(timer);"
+    "  });"
+    "})();"
+    "</script></body></html>",
+    height=0,
+)
