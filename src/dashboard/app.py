@@ -142,13 +142,30 @@ st.sidebar.toggle("☀️ Light Mode", key="light_mode")
 # ── Sidebar: Glossary ─────────────────────────────────────────────────────────
 with st.sidebar.expander("📖 Glossary"):
     _GLOSSARY = [
-        ("RUL",        "Remaining Useful Life — estimated cycles before engine failure"),
-        ("HIGH risk",  "Predicted RUL < 40 cycles — immediate maintenance required"),
-        ("MEDIUM risk","40 ≤ Predicted RUL < 80 cycles — schedule maintenance soon"),
-        ("LOW risk",   "Predicted RUL ≥ 80 cycles — engine operating normally"),
+        ("RUL (Remaining Useful Life)",
+         "The estimated number of cycles left before an engine is expected to fail."),
+        ("HIGH risk",
+         "Predicted RUL below 40 cycles. Immediate maintenance is required."),
+        ("MEDIUM risk",
+         "Predicted RUL between 40 and 80 cycles. Schedule maintenance soon."),
+        ("LOW risk",
+         "Predicted RUL above 80 cycles. Engine is operating normally."),
+        ("Integrated Gradients (IG)",
+         "Shows which sensors and time periods pushed the RUL prediction up or down. "
+         "Helps engineers understand what the model is reacting to."),
+        ("Occlusion Sensitivity",
+         "Measures how much the RUL prediction changes when each sensor is temporarily hidden. "
+         "The bigger the change, the more important that sensor is."),
+        ("LRP (Layer-wise Relevance Propagation)",
+         "Traces the prediction back through the model layer by layer to show which sensors "
+         "contributed most to the result."),
+        ("Activation Maximization",
+         "Shows what a perfectly healthy engine looks like according to the model. "
+         "Useful for comparing against a degraded engine to see what needs to change."),
     ]
     for _term, _defn in _GLOSSARY:
-        st.markdown(f"**{_term}** — {_defn}")
+        st.markdown(f"**{_term}**")
+        st.caption(_defn)
 
 # ── Anti-flicker CSS — always injected (fixes blinking on Streamlit Cloud) ────
 st.markdown("""<style>
@@ -314,7 +331,7 @@ def _render_ig_heatmap_bar(ig_arr, feature_names_list, cycles, sensor_values,
         ))
         fig_bar.update_layout(
             template=_PT, height=650,
-            title="Cumulative Sensor Importance<br>(fractions sum to 1)",
+            title="Cumulative Sensor Importance",
             xaxis_title="Share of Total Importance",
             xaxis_tickformat=".0%",
             yaxis_title="",
@@ -822,7 +839,7 @@ def _render_perf_tab_lstm(fleet_df):
         st.markdown("## 📊 Model Performance Metrics")
         perf = get_model_performance()
 
-        st.markdown("### 🎯 Regression — All Risk Windows (validation)")
+        st.markdown("### 🎯 Regression Performance (Validation Set)")
         c1, c2 = st.columns(2)
         _metric_card(c1, "RMSE — All Levels (L+M+H)", f"{perf['rmse_all']:.2f} cycles",
                      "📉", "#2a9d8f", "rgba(42,157,143,0.12)", "Lower is better")
@@ -927,7 +944,7 @@ def _render_perf_tab_lstm(fleet_df):
         fig_tcm.update_layout(
             template=_PT,
             xaxis_title="Predicted", yaxis_title="Actual",
-            title="Confusion Matrix — Test Set",
+            title="Confusion Matrix: Test Set",
         )
         st.plotly_chart(fig_tcm, use_container_width=True, key="lstm_test_cm")
 
@@ -993,7 +1010,7 @@ def _render_perf_tab_lstm(fleet_df):
                 template=_PT,
                 xaxis_title="Integrated Gradients Importance",
                 yaxis_title="Occlusion Importance",
-                title="IG vs Occlusion — Per-sensor Feature Importance",
+                title="IG vs Occlusion: Per-sensor Feature Importance",
             )
             st.plotly_chart(fig_xai, use_container_width=True, key="lstm_xai_scatter")
             corr_val = xai_data["corr"]
@@ -1003,11 +1020,11 @@ def _render_perf_tab_lstm(fleet_df):
                 help="1.0 = perfect agreement · 0.0 = no agreement",
             )
             if corr_val >= 0.7:
-                st.success("✅ Strong agreement — both methods highlight the same sensors.")
+                st.success("✅ Strong agreement: both methods highlight the same sensors.")
             elif corr_val >= 0.4:
-                st.warning("⚠️ Moderate agreement — methods partially disagree.")
+                st.warning("⚠️ Moderate agreement: methods partially disagree.")
             else:
-                st.error("❌ Low agreement — interpret explanations with caution.")
+                st.error("❌ Low agreement: interpret explanations with caution.")
 
 
 def _render_perf_tab_cnn(fleet_df):
@@ -1130,7 +1147,7 @@ def _render_perf_tab_cnn(fleet_df):
         fig_tcm.update_layout(
             template=_PT,
             xaxis_title="Predicted", yaxis_title="Actual",
-            title="Confusion Matrix — Test Set",
+            title="Confusion Matrix: Test Set",
         )
         st.plotly_chart(fig_tcm, use_container_width=True, key="cnn_test_cm")
 
@@ -1199,7 +1216,7 @@ def _render_perf_tab_cnn(fleet_df):
                     template=_PT,
                     xaxis_title="Integrated Gradients Importance",
                     yaxis_title="LRP Importance",
-                    title="LRP vs IG — Per-sensor Feature Importance",
+                    title="LRP vs IG: Per-sensor Feature Importance",
                 )
                 st.plotly_chart(fig_cnn_xai, use_container_width=True, key="cnn_xai_scatter")
                 corr_val = cnn_xai_data["corr"]
@@ -1210,11 +1227,11 @@ def _render_perf_tab_cnn(fleet_df):
                     help="1.0 = perfect agreement · 0.0 = no agreement",
                 )
                 if corr_val >= 0.7:
-                    st.success("✅ Strong agreement — both methods highlight the same sensors.")
+                    st.success("✅ Strong agreement: both methods highlight the same sensors.")
                 elif corr_val >= 0.4:
-                    st.warning("⚠️ Moderate agreement — methods partially disagree.")
+                    st.warning("⚠️ Moderate agreement: methods partially disagree.")
                 else:
-                    st.error("❌ Low agreement — interpret explanations with caution.")
+                    st.error("❌ Low agreement: interpret explanations with caution.")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1291,7 +1308,7 @@ with tab2:
                 )
 
         most_urgent = fleet_df.sort_values("Predicted_RUL").iloc[0]["Machine_ID"]
-        st.markdown(f"## Most Critical Engine: {most_urgent}")
+        st.markdown(f"## Most Critical Engine → {most_urgent}")
 
         top_k = st.session_state.get("lstm_top_features_slider", 3)
         result, report_df = explain_machine(most_urgent, cycle_number, fleet_df,
@@ -1426,7 +1443,7 @@ with tab2:
                 )
 
         most_urgent_cnn = fleet_df_cnn.sort_values("Predicted_RUL").iloc[0]["Machine_ID"]
-        st.markdown(f"## Most Critical Engine: {most_urgent_cnn}")
+        st.markdown(f"## Most Critical Engine → {most_urgent_cnn}")
 
         top_k_cnn = st.session_state.get("cnn_top_features_slider", 3)
         result_cnn, report_df_cnn = explain_machine_cnn(
@@ -1499,7 +1516,7 @@ with tab2:
                 st.plotly_chart(fig_am_bar, use_container_width=True, key="cnn_act_max_bar")
 
             # ── Healthy Mode Recommendations ──────────────────────────────────
-            st.markdown(f"### 🎯 Healthy Mode Recommendations — Engine {most_urgent_cnn}")
+            st.markdown(f"### 🎯 Healthy Mode Recommendations → Engine {most_urgent_cnn}")
             st.caption(
                 "Based on Activation Maximization: what sensor adjustments would "
                 "move this engine closer to the CNN's 'ideal healthy' profile."
@@ -1536,7 +1553,7 @@ with tab2:
 
             # ── LRP Heatmap ───────────────────────────────────────────────────
             st.markdown(
-                f"### {_tooltip('🔬 LRP', 'Layer-wise Relevance Propagation: propagates the prediction score backward through CNN layers to assign relevance to each input sensor-cycle')} — Layer-wise Relevance Propagation",
+                f"### {_tooltip('🔬 LRP', 'Layer-wise Relevance Propagation: propagates the prediction score backward through CNN layers to assign relevance to each input sensor-cycle')}",
                 unsafe_allow_html=True,
             )
             lrp_map = np.array(result_cnn["lrp"])        # (50, 24) signed
@@ -1607,7 +1624,7 @@ with tab2:
 
             # ── LRP Heatmap — selected engine ─────────────────────────────────
             st.markdown(
-                f"### {_tooltip('🔬 LRP', 'Layer-wise Relevance Propagation: propagates the prediction score backward through CNN layers to assign relevance to each input sensor-cycle')} — Layer-wise Relevance Propagation",
+                f"### {_tooltip('🔬 LRP', 'Layer-wise Relevance Propagation: propagates the prediction score backward through CNN layers to assign relevance to each input sensor-cycle')}",
                 unsafe_allow_html=True,
             )
             lrp2_map = np.array(result2_cnn["lrp"])        # (50, 24) signed
@@ -1653,7 +1670,7 @@ with tab2:
                 st.plotly_chart(fig_lrp2_bar, use_container_width=True, key="cnn_lrp_bar_selected")
 
             # ── Healthy Mode Recommendations for selected engine (full width) ──
-            st.markdown(f"### 🎯 Healthy Mode Recommendations — Engine {selected_engine_cnn}")
+            st.markdown(f"### 🎯 Healthy Mode Recommendations → Engine {selected_engine_cnn}")
             st.caption(
                 "Engine specific: what sensor changes would bring this engine "
                 "closer to the CNN's ideal healthy profile (last cycle)."
@@ -1767,18 +1784,50 @@ with tab4:
 components.html(
     "<!DOCTYPE html><html><head></head><body><script>"
     "(function() {"
-    "  if (!" + ("true" if _show_alert else "false") + ") return;"
-    "  var pdoc = window.parent.document;"
-    "  var old  = pdoc.getElementById('pm-high-alert');"
-    "  if (old) old.remove();"
+    "  var SHOW   = " + ("true" if _show_alert else "false") + ";"
+    "  var EXPIRY = 12000;"
+    "  var pdoc   = window.parent.document;"
+
+    # ── Helper: attach buttons so they keep working after each rerun ──
+    "  function attachButtons(popup) {"
+    "    var hBtn = popup.querySelector('[data-role=\"home\"]');"
+    "    var dBtn = popup.querySelector('[data-role=\"dismiss\"]');"
+    "    if (hBtn) hBtn.onclick = function() {"
+    "      var tabs = pdoc.querySelectorAll('button[data-baseweb=\"tab\"]');"
+    "      if (tabs && tabs[0]) tabs[0].click();"
+    "      popup.remove();"
+    "    };"
+    "    if (dBtn) dBtn.onclick = function() { popup.remove(); };"
+    "  }"
+
+    # ── On every rerun: manage any existing popup ──────────────────────
+    "  var existing = pdoc.getElementById('pm-high-alert');"
+    "  if (existing) {"
+    "    var age = Date.now() - parseInt(existing.getAttribute('data-created') || '0');"
+    "    if (age > EXPIRY) {"
+    "      existing.remove();"          # expired → remove it
+    "      existing = null;"
+    "    } else {"
+    "      attachButtons(existing);"    # still alive → refresh listeners
+    "      if (!SHOW) return;"          # no new alert → done
+    "      existing.remove();"          # new alert coming → clear old one
+    "    }"
+    "  } else {"
+    "    if (!SHOW) return;"            # nothing to do
+    "  }"
+
+    # ── Inject keyframe once ───────────────────────────────────────────
     "  if (!pdoc.getElementById('pm-alert-style')) {"
     "    var styleEl = pdoc.createElement('style');"
     "    styleEl.id  = 'pm-alert-style';"
     "    styleEl.textContent = '@keyframes pmSlideIn{from{opacity:0;transform:translateX(70px)}to{opacity:1;transform:translateX(0)}}';"
     "    pdoc.head.appendChild(styleEl);"
     "  }"
+
+    # ── Build new popup ────────────────────────────────────────────────
     "  var popup = pdoc.createElement('div');"
     "  popup.id  = 'pm-high-alert';"
+    "  popup.setAttribute('data-created', String(Date.now()));"
     "  popup.style.cssText = ["
     "    'position:fixed','top:72px','right:24px','width:370px',"
     "    'max-width:calc(100vw - 48px)',"
@@ -1800,24 +1849,19 @@ components.html(
     "  var btnRow = pdoc.createElement('div');"
     "  btnRow.style.cssText = 'display:flex;gap:10px;margin-top:18px;';"
     "  var homeBtn = pdoc.createElement('button');"
+    "  homeBtn.setAttribute('data-role','home');"
     "  homeBtn.textContent = '🏠 Go to Home';"
     "  homeBtn.style.cssText = 'flex:1;background:#fff;color:#9b1c1c;border:none;border-radius:9px;padding:11px 14px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);';"
     "  var dismissBtn = pdoc.createElement('button');"
+    "  dismissBtn.setAttribute('data-role','dismiss');"
     "  dismissBtn.textContent = '✕ Dismiss';"
     "  dismissBtn.style.cssText = 'background:rgba(255,255,255,0.12);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:9px;padding:11px 14px;font-size:13px;cursor:pointer;';"
     "  btnRow.appendChild(homeBtn);"
     "  btnRow.appendChild(dismissBtn);"
     "  popup.appendChild(btnRow);"
     "  pdoc.body.appendChild(popup);"
-    "  var timer = setTimeout(function() { popup.remove(); }, 12000);"
-    "  homeBtn.addEventListener('click', function() {"
-    "    var tabs = pdoc.querySelectorAll('button[data-baseweb=\"tab\"]');"
-    "    if (tabs && tabs[0]) tabs[0].click();"
-    "    popup.remove(); clearTimeout(timer);"
-    "  });"
-    "  dismissBtn.addEventListener('click', function() {"
-    "    popup.remove(); clearTimeout(timer);"
-    "  });"
+    "  attachButtons(popup);"
+    "  setTimeout(function() { if (pdoc.getElementById('pm-high-alert')) popup.remove(); }, EXPIRY);"
     "})();"
     "</script></body></html>",
     height=0,
