@@ -53,7 +53,7 @@ The system is trained and evaluated on the **NASA CMAPSS** turbofan engine datas
 *The synthetic sensor pattern the CNN has learned to associate with maximum remaining life. Used to generate per-sensor maintenance recommendations.*
 
 ### Model Performance — True vs Predicted RUL
-![Scatter Plot](assets/lstm_val_scatter.png)
+![Scatter Plot](assets/lstmscatt.png)
 *True vs predicted RUL scatter plot. Each point is one 50-cycle window. Red points (HIGH-risk) cluster tightly around the ideal diagonal.*
 
 ---
