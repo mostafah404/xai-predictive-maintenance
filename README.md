@@ -3,11 +3,15 @@
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-orange?logo=pytorch)](https://pytorch.org)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Live%20Demo-red?logo=streamlit)](https://xai-predictive-maintenance.streamlit.app/)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mostafah404/xai-predictive-maintenance/blob/main/notebooks/data_preprocessing.ipynb)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
 > A real-time predictive maintenance system that predicts the **Remaining Useful Life (RUL)** of turbofan engines and explains *why*, sensor by sensor, cycle by cycle.
 
-**Live Demo → [Launch Dashboard](https://xai-predictive-maintenance.streamlit.app/)**
+**Live Demo → [Launch Dashboard](https://xai-predictive-maintenance.streamlit.app/)**  
+
+
+**Notebook → [View in Google Colab](https://colab.research.google.com/github/mostafah404/xai-predictive-maintenance/blob/main/notebooks/data_preprocessing.ipynb)**
 
 ---
 
@@ -53,7 +57,7 @@ The system is trained and evaluated on the **NASA CMAPSS** turbofan engine datas
 *The synthetic sensor pattern the CNN has learned to associate with maximum remaining life. Used to generate per-sensor maintenance recommendations.*
 
 ### Model Performance — True vs Predicted RUL
-![Scatter Plot](assets/lstmscatt.png)
+![Scatter Plot](assets/lstmscatt    .png)
 *True vs predicted RUL scatter plot. Each point is one 50-cycle window. Red points (HIGH-risk) cluster tightly around the ideal diagonal.*
 
 ---
@@ -123,7 +127,7 @@ The dashboard will open in your browser at `http://localhost:8501`. It loads pre
 
 ## Training the Models
 
-Open and run the notebook:
+Open and run locally:
 
 ```bash
 jupyter notebook notebooks/data_preprocessing.ipynb
