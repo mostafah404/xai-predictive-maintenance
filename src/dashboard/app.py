@@ -135,9 +135,6 @@ font-size:12px;font-weight:700;">🟢 {_nb_low} Normal</span>
         unsafe_allow_html=True,
     )
 
-# ── Sidebar: Dark / Light mode toggle ─────────────────────────────────────────
-st.sidebar.markdown("---")
-st.sidebar.toggle("☀️ Light Mode", key="light_mode")
 
 # ── Sidebar: Glossary ─────────────────────────────────────────────────────────
 with st.sidebar.expander("📖 Glossary"):
@@ -173,15 +170,6 @@ st.markdown("""<style>
 [data-testid="stSkeleton"] { display: none !important; }
 </style>""", unsafe_allow_html=True)
 
-# ── Light mode CSS injection ───────────────────────────────────────────────────
-if st.session_state.light_mode:
-    st.markdown("""<style>
-.stApp { background-color: #f4f6fa !important; }
-section[data-testid="stSidebar"] > div { background-color: #e8eaf0 !important; }
-.stMarkdown p, .stMarkdown li, label { color: #1a1a2e !important; }
-h1, h2, h3, h4 { color: #1a1a2e !important; }
-.stTabs [data-baseweb="tab"] { background-color: #e0e4ef !important; color: #1a1a2e !important; }
-</style>""", unsafe_allow_html=True)
 
 # ── Main title + live controls ─────────────────────────────────────────────────
 st.title("⚙️ Predictive Maintenance Dashboard")
@@ -489,10 +477,10 @@ def _metric_card(col, label, value, icon, border_color, bg_color, sublabel=""):
     col.markdown(
         f"""<div style="border-left:5px solid {border_color};border-radius:10px;
 padding:16px 18px;background:{bg_color};margin:4px 0 12px 0;">
-<p style="margin:0 0 4px;font-size:11px;color:rgba(255,255,255,0.55);
+<p style="margin:0 0 4px;font-size:11px;color:{border_color};opacity:0.85;
 letter-spacing:0.5px;text-transform:uppercase;">{icon}&nbsp; {label}</p>
-<h2 style="margin:0;color:#ffffff;font-weight:700;font-size:1.9rem;">{value}</h2>
-{"<p style='margin:4px 0 0;font-size:11px;color:rgba(255,255,255,0.4);'>"+sublabel+"</p>" if sublabel else ""}
+<h2 style="margin:0;color:{border_color};font-weight:700;font-size:1.9rem;">{value}</h2>
+{"<p style='margin:4px 0 0;font-size:11px;color:"+border_color+";opacity:0.6;'>"+sublabel+"</p>" if sublabel else ""}
 </div>""",
         unsafe_allow_html=True,
     )
@@ -877,7 +865,7 @@ def _render_perf_tab_lstm(fleet_df):
         fig_sc = go.Figure()
         fig_sc.add_trace(go.Scatter(
             x=_true_sc, y=_pred_sc, mode="markers", name="Predictions",
-            marker=dict(size=5, opacity=0.5, color=_true_sc, colorscale="RdYlGn",
+            marker=dict(size=5, opacity=0.5, color=_true_sc, colorscale=[[0,"#e63946"],[0.32,"#e63946"],[0.32,"#3a7bd5"],[0.64,"#3a7bd5"],[0.64,"#22c55e"],[1,"#22c55e"]],
                         showscale=True, cmin=0, cmax=125,
                         colorbar=dict(title="True RUL", orientation="v",
                                       x=1.02, xanchor="left",
@@ -910,7 +898,7 @@ def _render_perf_tab_lstm(fleet_df):
         fig_tr.add_trace(go.Scatter(x=curve["cycles"], y=curve["pred"],
                                     name="Predicted RUL", line=dict(color="orange")))
         fig_tr.add_hline(y=40, line_dash="dash", line_color="red")
-        fig_tr.update_layout(template=_PT)
+        fig_tr.update_layout(template=_PT, xaxis_title="Cycle", yaxis_title="Remaining Useful Life (cycles)")
         st.plotly_chart(fig_tr, use_container_width=True, key="lstm_perf_traj")
 
     with perf_tab2:
@@ -960,7 +948,7 @@ def _render_perf_tab_lstm(fleet_df):
         fig_tsc = go.Figure()
         fig_tsc.add_trace(go.Scatter(
             x=_true_tsc, y=_pred_tsc, mode="markers", name="Predictions",
-            marker=dict(size=5, opacity=0.5, color=_true_tsc, colorscale="RdYlGn",
+            marker=dict(size=5, opacity=0.5, color=_true_tsc, colorscale=[[0,"#e63946"],[0.32,"#e63946"],[0.32,"#3a7bd5"],[0.64,"#3a7bd5"],[0.64,"#22c55e"],[1,"#22c55e"]],
                         showscale=True, cmin=0, cmax=125,
                         colorbar=dict(title="True RUL", orientation="v",
                                       x=1.02, xanchor="left",
@@ -1077,7 +1065,7 @@ def _render_perf_tab_cnn(fleet_df):
             fig_sc = go.Figure()
             fig_sc.add_trace(go.Scatter(
                 x=_true_sc, y=_pred_sc, mode="markers", name="Predictions",
-                marker=dict(size=5, opacity=0.5, color=_true_sc, colorscale="RdYlGn",
+                marker=dict(size=5, opacity=0.5, color=_true_sc, colorscale=[[0,"#e63946"],[0.32,"#e63946"],[0.32,"#3a7bd5"],[0.64,"#3a7bd5"],[0.64,"#22c55e"],[1,"#22c55e"]],
                             showscale=True, cmin=0, cmax=125,
                             colorbar=dict(title="True RUL", orientation="v",
                                           x=1.02, xanchor="left",
@@ -1110,7 +1098,7 @@ def _render_perf_tab_cnn(fleet_df):
         fig_tr.add_trace(go.Scatter(x=curve["cycles"], y=curve["pred"],
                                     name="Predicted RUL", line=dict(color="orange")))
         fig_tr.add_hline(y=40, line_dash="dash", line_color="red")
-        fig_tr.update_layout(template=_PT)
+        fig_tr.update_layout(template=_PT, xaxis_title="Cycle", yaxis_title="Remaining Useful Life (cycles)")
         st.plotly_chart(fig_tr, use_container_width=True, key="cnn_perf_traj")
 
     with perf_tab2:
@@ -1159,7 +1147,7 @@ def _render_perf_tab_cnn(fleet_df):
             fig_tsc = go.Figure()
             fig_tsc.add_trace(go.Scatter(
                 x=_true_tsc, y=_pred_tsc, mode="markers", name="Predictions",
-                marker=dict(size=5, opacity=0.5, color=_true_tsc, colorscale="RdYlGn",
+                marker=dict(size=5, opacity=0.5, color=_true_tsc, colorscale=[[0,"#e63946"],[0.32,"#e63946"],[0.32,"#3a7bd5"],[0.64,"#3a7bd5"],[0.64,"#22c55e"],[1,"#22c55e"]],
                             showscale=True, cmin=0, cmax=125,
                             colorbar=dict(title="True RUL", orientation="v",
                                           x=1.02, xanchor="left",
@@ -1334,7 +1322,7 @@ with tab2:
         fig_att = go.Figure()
         fig_att.add_trace(go.Scatter(
             x=result["cycles"], y=result["attention"],
-            mode="lines", line=dict(color="cyan", width=2),
+            mode="lines", line=dict(color="#3a7bd5", width=2),
         ))
         fig_att.update_layout(
             template=_PT, xaxis_title="Cycle", yaxis_title="Attention"
@@ -1379,7 +1367,7 @@ with tab2:
         fig_att2 = go.Figure()
         fig_att2.add_trace(go.Scatter(
             x=result2["cycles"], y=result2["attention"],
-            mode="lines", line=dict(color="cyan", width=2),
+            mode="lines", line=dict(color="#3a7bd5", width=2),
         ))
         fig_att2.update_layout(
             template=_PT, xaxis_title="Cycle", yaxis_title="Attention"
