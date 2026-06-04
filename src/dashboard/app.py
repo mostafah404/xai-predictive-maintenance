@@ -245,16 +245,16 @@ def _render_risk_rul_cards(risk, rul, prefix=""):
         st.markdown(
             f"""<div style="border:2px solid {rc};border-radius:10px;padding:14px;
 text-align:center;background:rgba(255,255,255,0.03);">
-<p style="margin:0;color:rgba(255,255,255,0.5);font-size:12px;">Predicted Risk</p>
+<p style="margin:0;color:{rc};opacity:0.75;font-size:12px;">Predicted Risk</p>
 <h2 style="margin:4px 0 0;color:{rc};font-weight:700;">{risk}</h2></div>""",
             unsafe_allow_html=True,
         )
     with c2:
         st.markdown(
-            f"""<div style="border:2px solid #888;border-radius:10px;padding:14px;
+            f"""<div style="border:2px solid {rc};border-radius:10px;padding:14px;
 text-align:center;background:rgba(255,255,255,0.03);">
-<p style="margin:0;color:rgba(255,255,255,0.5);font-size:12px;">Predicted RUL</p>
-<h2 style="margin:4px 0 0;color:#eee;font-weight:700;">{rul:.1f} cycles</h2></div>""",
+<p style="margin:0;color:{rc};opacity:0.75;font-size:12px;">Predicted RUL</p>
+<h2 style="margin:4px 0 0;color:{rc};font-weight:700;">{rul:.1f} cycles</h2></div>""",
             unsafe_allow_html=True,
         )
     st.markdown("")
@@ -869,11 +869,13 @@ def _render_perf_tab_lstm(fleet_df):
                         showscale=True, cmin=0, cmax=125,
                         colorbar=dict(title="True RUL", orientation="v",
                                       x=1.02, xanchor="left",
-                                      thickness=15, len=0.9)),
+                                      thickness=15, len=0.9,
+                                      tickvals=[0, 40, 80, 125],
+                                      ticktext=["0", "40", "80", "125"])),
         ))
         fig_sc.add_trace(go.Scatter(x=[0, 125], y=[0, 125],
                                     mode="lines", name="Ideal",
-                                    line=dict(color="white", dash="dash")))
+                                    line=dict(color="#a855f7", dash="dash")))
         fig_sc.add_vrect(x0=0, x1=40, fillcolor="red", opacity=0.08, layer="below", line_width=0)
         fig_sc.add_hrect(y0=0, y1=40, fillcolor="red", opacity=0.08, layer="below", line_width=0)
         fig_sc.add_vline(x=80, line_dash="dot", line_color="orange", opacity=0.4,
@@ -952,7 +954,9 @@ def _render_perf_tab_lstm(fleet_df):
                         showscale=True, cmin=0, cmax=125,
                         colorbar=dict(title="True RUL", orientation="v",
                                       x=1.02, xanchor="left",
-                                      thickness=15, len=0.9)),
+                                      thickness=15, len=0.9,
+                                      tickvals=[0, 40, 80, 125],
+                                      ticktext=["0", "40", "80", "125"])),
         ))
         fig_tsc.add_trace(go.Scatter(x=[0, 125], y=[0, 125],
                                      mode="lines", name="Ideal",
