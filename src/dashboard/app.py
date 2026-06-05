@@ -871,7 +871,7 @@ def _render_perf_tab_lstm(fleet_df):
                                       x=1.02, xanchor="left",
                                       thickness=15, len=0.9,
                                       tickvals=[0, 40, 80, 125],
-                                      ticktext=["0", "40", "80", "125"])),
+                                      ticktext=["0 — HIGH", "40 — MED", "80 — LOW", "125"])),
         ))
         fig_sc.add_trace(go.Scatter(x=[0, 125], y=[0, 125],
                                     mode="lines", name="Ideal",
@@ -956,7 +956,7 @@ def _render_perf_tab_lstm(fleet_df):
                                       x=1.02, xanchor="left",
                                       thickness=15, len=0.9,
                                       tickvals=[0, 40, 80, 125],
-                                      ticktext=["0", "40", "80", "125"])),
+                                      ticktext=["0 — HIGH", "40 — MED", "80 — LOW", "125"])),
         ))
         fig_tsc.add_trace(go.Scatter(x=[0, 125], y=[0, 125],
                                      mode="lines", name="Ideal",
@@ -994,7 +994,7 @@ def _render_perf_tab_lstm(fleet_df):
             fig_xai.add_trace(go.Scatter(
                 x=xai_data["ig"], y=xai_data["occ"],
                 mode="markers", name="Sensors",
-                marker=dict(size=8, opacity=0.7, color="#f4a261"),
+                marker=dict(size=8, opacity=0.7, color="#3a7bd5"),
                 text=list(range(len(xai_data["ig"]))),
                 hovertemplate="Sensor %{text}<br>IG: %{x:.4f}<br>Occlusion: %{y:.4f}<extra></extra>",
             ))
@@ -1073,11 +1073,13 @@ def _render_perf_tab_cnn(fleet_df):
                             showscale=True, cmin=0, cmax=125,
                             colorbar=dict(title="True RUL", orientation="v",
                                           x=1.02, xanchor="left",
-                                          thickness=15, len=0.9)),
+                                          thickness=15, len=0.9,
+                                          tickvals=[0, 40, 80, 125],
+                                          ticktext=["0 — HIGH", "40 — MED", "80 — LOW", "125"])),
             ))
             fig_sc.add_trace(go.Scatter(x=[0, 125], y=[0, 125],
                                         mode="lines", name="Ideal",
-                                        line=dict(color="white", dash="dash")))
+                                        line=dict(color="#a855f7", dash="dash")))
             fig_sc.add_vrect(x0=0, x1=40, fillcolor="red", opacity=0.08, layer="below", line_width=0)
             fig_sc.add_hrect(y0=0, y1=40, fillcolor="red", opacity=0.08, layer="below", line_width=0)
             fig_sc.add_vline(x=80, line_dash="dot", line_color="orange", opacity=0.4,
@@ -1155,11 +1157,13 @@ def _render_perf_tab_cnn(fleet_df):
                             showscale=True, cmin=0, cmax=125,
                             colorbar=dict(title="True RUL", orientation="v",
                                           x=1.02, xanchor="left",
-                                          thickness=15, len=0.9)),
+                                          thickness=15, len=0.9,
+                                          tickvals=[0, 40, 80, 125],
+                                          ticktext=["0 — HIGH", "40 — MED", "80 — LOW", "125"])),
             ))
             fig_tsc.add_trace(go.Scatter(x=[0, 125], y=[0, 125],
                                          mode="lines", name="Ideal",
-                                         line=dict(color="white", dash="dash")))
+                                         line=dict(color="#a855f7", dash="dash")))
             fig_tsc.add_vrect(x0=0, x1=40, fillcolor="red", opacity=0.08, layer="below", line_width=0)
             fig_tsc.add_hrect(y0=0, y1=40, fillcolor="red", opacity=0.08, layer="below", line_width=0)
             fig_tsc.add_vline(x=80, line_dash="dot", line_color="orange", opacity=0.4,
