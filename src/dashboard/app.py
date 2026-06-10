@@ -227,14 +227,24 @@ def _cycle_slider(tab_key):
     if max_cycle <= min_cycle:
         st.info("📡 Streaming data… waiting for enough cycles")
         return max_cycle
-    selected = st.slider(
-        "Explore Past Cycles",
-        min_value=min_cycle,
-        max_value=max_cycle,
-        value=max_cycle,
-        key=tab_key,
-        disabled=st.session_state.live_mode,
-    )
+    if st.session_state.live_mode:
+        selected = st.slider(
+            "Explore Past Cycles",
+            min_value=min_cycle,
+            max_value=max_cycle,
+            value=max_cycle,
+            key=tab_key,
+            disabled=True,
+        )
+        st.markdown('<p style="color:#3a7bd5;font-size:13px;">⏸ Turn off <b>Live Mode</b> to explore past cycles.</p>', unsafe_allow_html=True)
+    else:
+        selected = st.slider(
+            "Explore Past Cycles",
+            min_value=min_cycle,
+            max_value=max_cycle,
+            value=max_cycle,
+            key=tab_key,
+        )
     return selected
 
 
@@ -960,7 +970,7 @@ def _render_perf_tab_lstm(fleet_df):
         ))
         fig_tsc.add_trace(go.Scatter(x=[0, 125], y=[0, 125],
                                      mode="lines", name="Ideal",
-                                     line=dict(color="white", dash="dash")))
+                                     line=dict(color="#a855f7", dash="dash")))
         fig_tsc.add_vrect(x0=0, x1=40, fillcolor="red", opacity=0.08, layer="below", line_width=0)
         fig_tsc.add_hrect(y0=0, y1=40, fillcolor="red", opacity=0.08, layer="below", line_width=0)
         fig_tsc.add_vline(x=80, line_dash="dot", line_color="orange", opacity=0.4,
