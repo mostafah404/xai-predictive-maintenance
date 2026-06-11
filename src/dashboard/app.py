@@ -407,7 +407,7 @@ def _render_sensor_deepdive(fleet_df, selected_engine, result_cache, cycle_numbe
     if sensors_to_plot:
         n_cols = 2
         n_rows = math.ceil(len(sensors_to_plot) / n_cols)
-        v_spacing = min(0.12, 0.9 / max(n_rows - 1, 1))
+        v_spacing = min(0.08, 0.7 / max(n_rows - 1, 1))
         fig_dd = make_subplots(
             rows=n_rows, cols=n_cols,
             subplot_titles=sensors_to_plot,
@@ -447,9 +447,9 @@ def _render_sensor_deepdive(fleet_df, selected_engine, result_cache, cycle_numbe
 
         fig_dd.update_layout(
             template=_PT,
-            height=max(400, n_rows * 280),
+            height=max(500, n_rows * 350),
             title_text=f"Engine {dd_engine} — Sensor Values vs Healthy Baseline",
-            margin=dict(t=60, b=60),
+            margin=dict(t=60, b=80),
         )
         st.plotly_chart(fig_dd, use_container_width=True, key=f"{prefix}_sensor_deepdive_chart")
     else:
