@@ -1,0 +1,22 @@
+% deletion test (mean |change in RUL| in cycles after zeroing top-5% / top-10% inputs) and LRP epsilon sensitivity
+CNN & IG & 25.5 & 30.7 & -- & -- & -- & -- \\
+CNN & Occlusion & 22.1 & 29.3 & -- & -- & -- & -- \\
+CNN & LRP $\varepsilon$=0.001 & 22.2 & 25.3 & 0.93 & 0.92 & 0.96 & 0.05 \\
+CNN & LRP $\varepsilon$=0.01 & 21.9 & 25.1 & 0.93 & 0.91 & 0.96 & 0.05 \\
+CNN & LRP $\varepsilon$=0.1 & 21.1 & 23.9 & 0.90 & 0.89 & 0.93 & 0.06 \\
+CNN & LRP $\varepsilon$=1 & 16.5 & 20.1 & 0.76 & 0.76 & 0.50 & 0.07 \\
+CNN & random & 3.1 & 5.4 & -- & -- & -- & -- \\
+LSTM & IG & 21.6 & 24.8 & -- & -- & -- & -- \\
+LSTM & Occlusion & 22.6 & 26.5 & -- & -- & -- & -- \\
+LSTM & LRP $\varepsilon$=0.001 & 10.7 & 15.1 & 0.37 & 0.35 & 0.15 & 0.21 \\
+LSTM & LRP $\varepsilon$=0.01 & 12.6 & 16.8 & 0.45 & 0.43 & 0.45 & 0.20 \\
+LSTM & LRP $\varepsilon$=0.1 & 14.6 & 22.1 & 0.42 & 0.46 & 0.80 & 0.16 \\
+LSTM & LRP $\varepsilon$=1 & 13.6 & 21.2 & 0.32 & 0.42 & 0.72 & 0.03 \\
+LSTM & random & 2.0 & 4.1 & -- & -- & -- & -- \\
+Hybrid & IG & 36.3 & 46.6 & -- & -- & -- & -- \\
+Hybrid & Occlusion & 31.5 & 40.7 & -- & -- & -- & -- \\
+Hybrid & LRP $\varepsilon$=0.001 & 8.6 & 11.0 & -0.30 & -0.04 & 0.89 & 0.57 \\
+Hybrid & LRP $\varepsilon$=0.01 & 8.7 & 11.2 & -0.31 & -0.06 & 0.88 & 0.56 \\
+Hybrid & LRP $\varepsilon$=0.1 & 9.8 & 11.8 & -0.33 & -0.08 & 0.78 & 0.44 \\
+Hybrid & LRP $\varepsilon$=1 & 16.1 & 26.4 & -0.14 & 0.11 & 0.56 & 0.06 \\
+Hybrid & random & 2.0 & 4.5 & -- & -- & -- & -- \\

@@ -49,3 +49,36 @@ Thesis_Report/*.bbl
 
 # Keep data and models (they are small enough)
 # data/ is intentionally NOT ignored
+
+# macOS
+.DS_Store
+
+# Node packages used once to build the presentation
+node_modules/
+package.json
+package-lock.json
+
+# local working files, not part of the project
+*.bak
+*.zip
+paper_update/
+paper_draft_old/
+Thesis_Report/results_fresh/
+results/fd001_quick/
+notebooks/*.png
+paper/main.tex
+paper/main.abs
+paper/main.pdf
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.bbl
+paper/*.blg
+
+# helper scripts used to edit the shared Overleaf draft
+notebooks/patch_main_tex.py
+notebooks/make_paste_guide.py
+notebooks/fix_references.py
+notebooks/paper_numbers.py
+notebooks/data_preprocessing_rerun.ipynb
+notebooks/make_update_guide.py
