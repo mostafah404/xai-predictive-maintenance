@@ -57,7 +57,7 @@ The system is trained and evaluated on the **NASA CMAPSS** turbofan engine datas
 *The synthetic sensor pattern the CNN has learned to associate with maximum remaining life. Used to generate per-sensor maintenance recommendations.*
 
 ### Model Performance — True vs Predicted RUL
-![Scatter Plot](assets/lstmscatt    .png)
+![Scatter Plot](assets/lstmscatt.png)
 *True vs predicted RUL scatter plot. Each point is one 50-cycle window. Red points (HIGH-risk) cluster tightly around the ideal diagonal.*
 
 ---
@@ -130,7 +130,7 @@ streamlit run app.py
 
 The dashboard will open in your browser at `http://localhost:8501`. It loads pre-trained model weights from the `data/` folder automatically.
 
-> **Note:** The dashboard requires `model.pth` (LSTM) and `cnn_model.pth` (CNN) to be present in `data/`. These are already included in the repository. If they are missing, run the notebook first (see below). You don't need to wait for the whole notebook to run , the dashboard will run completly fine after running the training cells for LSTM and CNN models, cells [20],[58] respectively.
+> **Note:** The dashboard requires `model.pth` (LSTM) and `cnn_model.pth` (CNN) to be present in `data/`. These are already included in the repository. If they are missing, run the notebook first (see below). You do not need to run the whole notebook: the dashboard works after the training cells of the LSTM and the CNN, which are cells [20] and [59].
 
 ---
 
@@ -204,18 +204,20 @@ The LRP for the LSTM and the hybrid model is written from scratch in `notebooks/
 ### LSTM with Attention
 - 2-layer LSTM, hidden size 96, additive attention over 50 timesteps
 - Attention mechanism highlights *which cycles* were most important for the prediction
-- Explained using Integrated Gradients and Occlusion Sensitivity
+- Shown in the dashboard with Integrated Gradients and Occlusion Sensitivity
 
 ### 1D CNN
 - Two convolutional blocks (24→32→16 channels) followed by two fully connected layers
 - Separate ReLU instances for LRP compatibility
-- Explained using Layer-wise Relevance Propagation and Activation Maximization
+- Shown in the dashboard with Layer-wise Relevance Propagation and Activation Maximization
 
 ### Hybrid CNN-LSTM-BiLSTM
 - Three Conv1d layers (32→64→128 channels) extract local degradation features
 - Three-layer LSTM captures long-range sequential dependencies
 - Two-layer Bidirectional LSTM adds context from both directions
 - FC regression head
+
+In the paper analysis all four methods (IG, LRP, Occlusion, Activation Maximization) are applied to all three models.
 
 ---
 
