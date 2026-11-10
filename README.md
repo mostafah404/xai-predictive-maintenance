@@ -25,38 +25,38 @@ The system is trained and evaluated on the **NASA CMAPSS** turbofan engine datas
 
 ## Dashboard Screenshots
 
-### Home Tab — Live Fleet Overview
+### Home Tab: Live Fleet Overview
 ![Home Tab](assets/home.png)
-*Fleet KPI cards, ranked critical engines bar chart, and emergency alerts — all updating in real time.*
+*Fleet KPI cards, ranked critical engines bar chart, and emergency alerts, all updating in real time.*
 
-### Maintenance Engineer Tab — XAI Deep Dive
+### Maintenance Engineer Tab: XAI Deep Dive
 ![Engineer Tab](assets/eng.png)
 *The tab automatically loads the most urgent engine in the fleet. The IG attribution heatmap (sensor × cycle) is paired with a cumulative attribution bar chart so engineers can see exactly which sensors, at which cycles, drove the prediction. A dropdown lets you switch to any engine in the fleet for a full side-by-side comparison.*
 
 ![Sensor Deep Dive](assets/sensors.png)
 *Sensor deep dive view for the selected engine: each sensor's full history plotted against its healthy baseline band (±1σ). Sensors drifting outside the green band are immediately visible, letting engineers cross-check the XAI output against the raw data before taking action.*
 
-### Operations Manager Tab — Fleet Risk Table
+### Operations Manager Tab: Fleet Risk Table
 ![Operations Tab](assets/operations1.png)
 *Color-coded risk ranking table (red = HIGH, blue = MEDIUM, green = LOW) with a fleet health score and risk distribution chart.*
 
-### Explainability — IG Attribution Heatmap
+### Explainability: IG Attribution Heatmap
 ![IG Heatmap](assets/ig_heatmap.png)
 *Signed attribution heatmap: red cells flag sensor readings that are pushing the predicted RUL down (degradation), green cells show readings that support a longer life.*
 
-### Explainability — LRP Heatmap (CNN)
+### Explainability: LRP Heatmap (CNN)
 ![LRP Heatmap](assets/lrp_heatmap.png)
-*Layer-wise Relevance Propagation applied to the CNN model. The same sensor subset and late-cycle concentration as IG confirms the findings are robust.*
+*Layer-wise Relevance Propagation applied to the CNN model. For this engine LRP points to the same sensors and the same late cycles as IG.*
 
 ### XAI Method Comparison
 ![XAI Comparison](assets/xaicomp.png)
-*IG, Occlusion, and LRP side by side on the same engine — all three independently point to the same sensors and the same time window.*
+*IG, Occlusion, and LRP side by side on the same CNN engine. All three point to the same sensors and the same time window.*
 
-### Activation Maximization — Healthy Mode Profile
+### Activation Maximization: Healthy Mode Profile
 ![Activation Maximization](assets/actmax.png)
 *The synthetic sensor pattern the CNN has learned to associate with maximum remaining life. Used to generate per-sensor maintenance recommendations.*
 
-### Model Performance — True vs Predicted RUL
+### Model Performance: True vs Predicted RUL
 ![Scatter Plot](assets/lstmscatt.png)
 *True vs predicted RUL scatter plot. Each point is one 50-cycle window. Red points (HIGH-risk) cluster tightly around the ideal diagonal.*
 
@@ -143,12 +143,12 @@ jupyter notebook notebooks/data_preprocessing.ipynb
 
 The notebook is organized into these sections:
 
-1. **Data Loading and Preprocessing** — loads CMAPSS FD001, computes RUL labels, applies StandardScaler, creates 50-cycle sliding windows with an 80/20 train/validation split
-2. **LSTM + Attention Model** — trains a 2-layer LSTM with additive attention (121K parameters), saves `data/model.pth`
-3. **1D CNN Model** — trains a convolutional model (57K parameters), saves `data/cnn_model.pth`
-4. **Hybrid CNN-LSTM-BiLSTM** — trains the hybrid architecture (460K parameters), saves `data/hybrid_model.pth`
-5. **XAI examples** — Integrated Gradients, Occlusion Sensitivity, LRP and Activation Maximization on single engines (the full analysis of the paper is in `reproduce_paper_results.ipynb`)
-6. **Multi-Dataset Evaluation** — trains all three models on FD001–FD004, generates loss curves, scatter plots, and a cross-dataset comparison table
+1. **Data Loading and Preprocessing**: loads CMAPSS FD001, computes RUL labels, applies StandardScaler, creates 50-cycle sliding windows with an 80/20 train/validation split
+2. **LSTM + Attention Model**: trains a 2-layer LSTM with additive attention (121K parameters), saves `data/model.pth`
+3. **1D CNN Model**: trains a convolutional model (57K parameters), saves `data/cnn_model.pth`
+4. **Hybrid CNN-LSTM-BiLSTM**: trains the hybrid architecture (460K parameters), saves `data/hybrid_model.pth`
+5. **XAI examples**: Integrated Gradients, Occlusion Sensitivity, LRP and Activation Maximization on single engines (the full analysis of the paper is in `reproduce_paper_results.ipynb`)
+6. **Multi-Dataset Evaluation**: trains all three models on FD001–FD004, generates loss curves, scatter plots, and a cross-dataset comparison table
 
 ---
 
@@ -238,13 +238,13 @@ In the paper analysis all four methods (IG, LRP, Occlusion, Activation Maximizat
 
 ## Dashboard Features
 
-- **Live simulation** — cycle counter advances every 10 seconds, all views update automatically
-- **Fleet overview** — KPI cards, ranked bar chart, emergency alerts for HIGH-risk engines
-- **Per-engine XAI** — IG or LRP heatmap, temporal attention curve, cumulative sensor attribution
-- **Sensor deep dive** — each sensor's full history plotted against its healthy baseline (±1σ)
-- **Healthy-mode recommendations** — sensor-by-sensor raise/lower actions derived from activation maximization
-- **Explanation report** — tabular XAI summary exportable as Excel (5 sheets) or CSV
-- **Model performance tab** — scatter plots, confusion matrices, and IG-Occlusion agreement chart for any engine
+- **Live simulation**: cycle counter advances every 10 seconds, all views update automatically
+- **Fleet overview**: KPI cards, ranked bar chart, emergency alerts for HIGH-risk engines
+- **Per-engine XAI**: IG or LRP heatmap, temporal attention curve, cumulative sensor attribution
+- **Sensor deep dive**: each sensor's full history plotted against its healthy baseline (±1σ)
+- **Healthy-mode recommendations**: sensor-by-sensor raise/lower actions derived from activation maximization
+- **Explanation report**: tabular XAI summary exportable as Excel (5 sheets) or CSV
+- **Model performance tab**: scatter plots, confusion matrices, and IG-Occlusion agreement chart for any engine
 
 ---
 

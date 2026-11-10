@@ -1,11 +1,11 @@
 """
 Cross-method / cross-model XAI consistency analysis for the RUL paper (CMAPSS FD001).
 
-Single source of truth for the numbers in Section 4 of the paper.  Used both by the notebook
+The numbers in Section 4 of the paper are computed here.  Used both by the notebook
 (`data_preprocessing.ipynb`, last section) and by the stand-alone runner `run_xai_analysis.py`.
 
 Methods : IG (zero baseline, 50 steps), Occlusion (1,1) with zero baseline, LRP (own implementation,
-          lrp_recurrent.py, eps-rule + Arras et al. rules for LSTM) -- LRP for ALL three models.
+          lrp_recurrent.py, eps-rule + Arras et al. rules for LSTM) -- LRP is applied to all three models.
 Models  : CNN, LSTM + attention, hybrid CNN-LSTM-BiLSTM.
 """
 import json

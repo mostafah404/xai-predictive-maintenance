@@ -164,7 +164,7 @@ with st.sidebar.expander("📖 Glossary"):
         st.markdown(f"**{_term}**")
         st.caption(_defn)
 
-# ── Anti-flicker CSS — always injected (fixes blinking on Streamlit Cloud) ────
+# ── Anti-flicker CSS: stops the page from blinking on Streamlit Cloud ────
 st.markdown("""<style>
 [data-stale="true"] { opacity: 1 !important; visibility: visible !important; }
 [data-testid="stSkeleton"] { display: none !important; }
@@ -216,7 +216,7 @@ def highlight_rows_fleet(row):
     return [bg] * len(row)
 
 
-# keep legacy alias used in home tab
+# alias used in the home tab
 highlight_rows_home = highlight_rows_fleet
 
 
@@ -504,7 +504,7 @@ def _build_engineer_excel(cycle_number, use_cnn=False):
     ------
     1. Fleet Overview      — Machine_ID, Cycle, Predicted_RUL, Risk_Label, Predicted_Failure_Cycle
     2. Mean Sensor Values  — 50-cycle window average per engine
-    3. Last Cycle Values   — raw sensor values at the most-recent observed cycle (no Peak_Cycle column)
+    3. Last Cycle Values   — raw sensor values at the most recent observed cycle
     4. Sensor Anomalies    — sensors deviating > 2σ from the healthy baseline
     5. Healthy Baseline    — Sensor, Healthy_Mean, Healthy_Std
     """
@@ -522,7 +522,7 @@ def _build_engineer_excel(cycle_number, use_cnn=False):
     # ── Sheet 2: Mean Sensor Values ───────────────────────────────────────────
     mean_df = get_fleet_sensor_summary(cycle_number, use_cnn=use_cnn)
 
-    # ── Sheet 3: Last Cycle Values (drop Peak_Cycle) ──────────────────────────
+    # ── Sheet 3: Last Cycle Values ──────────────────────────
     peak_df = get_engine_peak_snapshot(cycle_number)
     last_cycle_df = peak_df.drop(columns=["Peak_Cycle"], errors="ignore")
 
@@ -578,7 +578,7 @@ def _build_engineer_excel(cycle_number, use_cnn=False):
     return buf
 
 
-# ── Health progress bar (replaces gauge) ──────────────────────────────────────
+# ── Health progress bar ──────────────────────────────────────
 def _render_health_bar(health_score, prefix):
     bar_color = (
         "#2a9d8f" if health_score > 66
@@ -781,7 +781,7 @@ RUL: <b>{eng_row['Predicted_RUL']:.0f} cycles</b></p>
     n_high_ops   = int(risk_counts.get("HIGH", 0))
     health_score = round(100 * (1 - n_high_ops / max(len(fleet_df), 1)), 1)
 
-    # Progress bar (replaces gauge)
+    # Progress bar
     _render_health_bar(health_score, prefix)
 
     # Pie chart

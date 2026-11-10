@@ -65,7 +65,7 @@ check("linear model: integrated gradients = w * x", np.allclose(ig, exact, atol=
 check("linear model: occlusion = w * x", np.allclose(oc, exact, atol=1e-5), f"(max error {np.abs(oc - exact).max():.1e})")
 check("linear model: attributions sum to f(x) - f(0) (completeness)", np.allclose(ig.sum((1, 2)), lin(X).detach().numpy(), atol=1e-4))
 
-# 7. the constant channels of FD001 are exactly zero after scaling and get zero attribution
+# 7. the constant channels of FD001 are zero after scaling (up to rounding) and get zero attribution
 try:
     from rul_common import load_fd001
     d = load_fd001()

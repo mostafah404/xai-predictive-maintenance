@@ -45,7 +45,7 @@ def mean(v):
 
 
 def fmt_table(rows, cols, label_cols, bold_max=True):
-    """rows: list of (label tuple, {col: value}); bold the column maxima (as in the draft)"""
+    """rows: list of (label tuple, {col: value}); bold the largest value of every column"""
     best = {c: max(r[1][c] for r in rows) for c in cols}
     lines = []
     for lab, vals in rows:
