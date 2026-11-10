@@ -96,14 +96,13 @@ xai_predictive_maintenance/
 │   ├── performance_checkpoints.py  # RMSE, MAE, accuracy, S-score of the saved models
 │   ├── trust_statistics.py         # statistics of the trust study (survey in data/)
 │   ├── make_paper_assets.py        # figures (PDF) and LaTeX tables of the paper
-│   ├── verify_paper_numbers.py     # compares the numbers in paper/main.tex with this repository
+│   ├── verify_paper_numbers.py     # compares the tables of the paper (paper/main.tex, not in the repository) with this repository
 │   └── test_lrp_recurrent.py, test_xai_metrics.py    # tests
 │
 ├── data/                           # CMAPSS files, survey answers, saved model weights (*.pth)
 ├── results/
 │   ├── fd001/                      # saved results of the explanation analysis
 │   └── paper/                      # figures and tables of the paper
-├── paper/                          # template files and figures of the paper (main.tex itself is not in the repository)
 ├── assets/                         # screenshots for this README
 ├── requirements.txt
 └── README.md

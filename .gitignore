@@ -66,14 +66,8 @@ paper_draft_old/
 Thesis_Report/results_fresh/
 results/fd001_quick/
 notebooks/*.png
-paper/main.tex
-paper/main.abs
-paper/main.pdf
-paper/*.aux
-paper/*.log
-paper/*.out
-paper/*.bbl
-paper/*.blg
+# the paper itself is written in Overleaf and kept out of the repository
+paper/
 
 # helper scripts used to edit the shared Overleaf draft
 notebooks/patch_main_tex.py
