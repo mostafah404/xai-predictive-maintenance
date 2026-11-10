@@ -190,9 +190,8 @@ python verify_paper_numbers.py      # compares paper/main.tex with the numbers a
 
 The LRP for the LSTM and the hybrid model is written from scratch in `notebooks/lrp_recurrent.py`, because Captum has no LRP rule for `nn.LSTM`. It follows Arras et al. (2017, 2019).
 
-## Known issues
+## Notes on the setup
 
-- **Weights of the best epoch.** An earlier version of the notebook kept the weights of the last epoch for the LSTM and the CNN (`state_dict()` was not copied). This is fixed with `copy.deepcopy`, and the LSTM and the CNN in `data/` were trained again. All results in this repository and in the paper use these weights. The hybrid model was always saved correctly. `python retrain_lstm_cnn.py` (in `notebooks/`) trains the LSTM and the CNN again with the same code and seeds.
 - **The scaler is fitted on all 100 FD001 training engines**, before the split into training and validation engines. The effect is small, but the validation engines are not completely unseen by the scaler.
 - **The target of a window is the RUL of the cycle after the window**, not of its last cycle (`y = machine_data.iloc[i + window_size]['RUL']`). The test windows use the RUL file as given, so training and test targets differ by one cycle.
 - The performance numbers of FD002 to FD004 come from a separate training run (last section of `data_preprocessing.ipynb`), with slightly different settings for the hybrid model. Only FD001 uses the saved models.
