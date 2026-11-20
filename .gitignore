@@ -69,10 +69,8 @@ notebooks/*.png
 # the paper itself is written in Overleaf and kept out of the repository
 paper/
 
-# helper scripts used to edit the shared Overleaf draft
-notebooks/patch_main_tex.py
-notebooks/make_paste_guide.py
-notebooks/fix_references.py
-notebooks/paper_numbers.py
-notebooks/data_preprocessing_rerun.ipynb
-notebooks/make_update_guide.py
+# scratch folder: old scripts and results that are not part of the project
+scratch/
+
+# created by xai_rul_paper_results.ipynb (saved maps and figures)
+results/

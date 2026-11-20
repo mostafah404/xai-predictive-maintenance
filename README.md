@@ -86,23 +86,9 @@ xai_predictive_maintenance/
 ├── notebooks/
 │   ├── data_preprocessing.ipynb    # data preparation, training of the three models, dashboard examples,
 │   │                               # multi-dataset run (FD001-FD004)
-│   ├── reproduce_paper_results.ipynb   # every table and figure of the paper, outputs included
-│   ├── rul_common.py               # model classes, FD001 loading, loading of the saved weights
-│   ├── lrp_recurrent.py            # LRP written from scratch for the CNN, the LSTM and the hybrid model
-│   ├── xai_analysis.py             # IG, Occlusion, LRP maps, agreement metrics, sensitivity, infidelity, activation maximization
-│   ├── run_xai_analysis.py         # runs the whole explanation analysis, caches the result in results/fd001
-│   ├── lrp_validation.py           # deletion test and epsilon sweep for LRP
-│   ├── retrain_lstm_cnn.py         # trains the LSTM and the CNN again, saves the weights in data/
-│   ├── performance_checkpoints.py  # RMSE, MAE, accuracy, S-score of the saved models
-│   ├── trust_statistics.py         # statistics of the trust study (survey in data/)
-│   ├── make_paper_assets.py        # figures (PDF) and LaTeX tables of the paper
-│   ├── verify_paper_numbers.py     # compares the tables of the paper (paper/main.tex, not in the repository) with this repository
-│   └── test_lrp_recurrent.py, test_xai_metrics.py    # tests
+│   └── xai_rul_paper_results.ipynb # all results and figures of the paper (code, outputs included)
 │
 ├── data/                           # CMAPSS files, survey answers, saved model weights (*.pth)
-├── results/
-│   ├── fd001/                      # saved results of the explanation analysis
-│   └── paper/                      # figures and tables of the paper
 ├── assets/                         # screenshots for this README
 ├── requirements.txt
 └── README.md
@@ -147,14 +133,14 @@ The notebook is organized into these sections:
 2. **LSTM + Attention Model**: trains a 2-layer LSTM with additive attention (121K parameters), saves `data/model.pth`
 3. **1D CNN Model**: trains a convolutional model (57K parameters), saves `data/cnn_model.pth`
 4. **Hybrid CNN-LSTM-BiLSTM**: trains the hybrid architecture (460K parameters), saves `data/hybrid_model.pth`
-5. **XAI examples**: Integrated Gradients, Occlusion Sensitivity, LRP and Activation Maximization on single engines (the full analysis of the paper is in `reproduce_paper_results.ipynb`)
+5. **XAI examples**: Integrated Gradients, Occlusion Sensitivity, LRP and Activation Maximization on single engines (the full analysis of the paper is in `xai_rul_paper_results.ipynb`)
 6. **Multi-Dataset Evaluation**: trains all three models on FD001–FD004, generates loss curves, scatter plots, and a cross-dataset comparison table
 
 ---
 
 ## Reproducing the paper
 
-The paper compares four explanation methods (Integrated Gradients, LRP, Occlusion, Activation Maximization) on the three models, and reports a user study on trust. Everything can be reproduced without training anything, because the trained weights are in `data/`.
+The paper compares four explanation methods (Integrated Gradients, LRP on the CNN, Occlusion, Activation Maximization) on the three models, and reports a user study on trust. Everything can be reproduced without training anything, because the trained weights are in `data/`.
 
 **1. Install** (Python 3.10 or newer; a laptop CPU is enough)
 
@@ -168,26 +154,14 @@ pip install -r requirements.txt
 
 ```bash
 cd notebooks
-jupyter notebook reproduce_paper_results.ipynb
+jupyter notebook xai_rul_paper_results.ipynb
 ```
 
-Run all cells from top to bottom. The notebook already contains its outputs, so you can also just read it on GitHub. It shows Tables 2 to 11 of the paper, the figures of Section 4, and ends with a check of the numbers in `paper/main.tex`. With the saved results in `results/fd001/` it runs in a few minutes. If you delete that folder, the explanation analysis is computed again (about 15 minutes).
+The notebook holds all the code and results of the paper and is divided into sections: data import and preprocessing (FD001), the CNN, the LSTM and the hybrid model, the attribution maps, within-model and cross-model agreement, agreement with the physical sensor trends, sensitivity and infidelity, activation maximization, the sensitivity of the model predictions, and the trust study. It already contains its outputs, so you can also just read it on GitHub.
 
-**3. Or run the scripts one by one** (from the `notebooks` folder)
+The notebook does not train anything. It loads the saved weights in `data/`, which are the models of the paper (trained in `data_preprocessing.ipynb`), so the results are exactly those of the paper. The attribution maps and the sensitivity and infidelity values take about 15 minutes to compute on a laptop CPU. They are saved in `results/cache/`, so a second run takes a few minutes, and the figures are saved as PDF files in `results/figures/`. The notebook creates the `results/` folder; it is not part of the repository.
 
-```bash
-python retrain_lstm_cnn.py          # optional: trains the LSTM and the CNN again (a few minutes)
-python test_lrp_recurrent.py        # checks of the LRP implementation
-python test_xai_metrics.py          # checks of the agreement metrics
-python performance_checkpoints.py   # performance of the saved models (Tables 4 and 5)
-python run_xai_analysis.py          # explanation analysis, saved in ../results/fd001 (about 15 minutes)
-python lrp_validation.py            # deletion test and epsilon sweep (Table 9)
-python trust_statistics.py          # statistics of the trust study (Section 5)
-python make_paper_assets.py         # figures and tables in ../results/paper
-python verify_paper_numbers.py      # compares paper/main.tex with the numbers above (skipped if the file is absent)
-```
-
-The LRP for the LSTM and the hybrid model is written from scratch in `notebooks/lrp_recurrent.py`, because Captum has no LRP rule for `nn.LSTM`. It follows Arras et al. (2017, 2019).
+LRP is written from scratch for the CNN in the notebook and checked against the LRP of Captum. The notebook also checks that the cached maps are reproduced.
 
 ## Notes on the setup
 
@@ -215,7 +189,7 @@ The LRP for the LSTM and the hybrid model is written from scratch in `notebooks/
 - Two-layer Bidirectional LSTM adds context from both directions
 - FC regression head
 
-In the paper analysis all four methods (IG, LRP, Occlusion, Activation Maximization) are applied to all three models.
+In the paper analysis IG, Occlusion and Activation Maximization are applied to all three models, and LRP to the CNN.
 
 ---
 
@@ -232,7 +206,7 @@ In the paper analysis all four methods (IG, LRP, Occlusion, Activation Maximizat
 | Activation Maximization | CNN | The synthetic sensor pattern the CNN considers maximally healthy |
 | IG-LRP-Occlusion Agreement | CNN | Spearman correlation between (IG, LRP), (IG, Occlusion), (Occlusion, LRP) sensor rankings |
 
-**In the paper analysis** (`notebooks/`): all four methods are applied to all three models, and their explanations are compared with Spearman correlation, rank, feature, sign and signed-rank agreement, sensitivity and infidelity. LRP for the LSTM and the hybrid model comes from `lrp_recurrent.py`.
+**In the paper analysis** (`notebooks/xai_rul_paper_results.ipynb`): IG and Occlusion are applied to all three models and LRP to the CNN. The explanations are compared with Spearman correlation, rank, feature, sign and signed-rank agreement, sensitivity and infidelity. Activation Maximization is compared across the three models.
 
 ---
 
