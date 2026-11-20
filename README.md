@@ -163,12 +163,6 @@ The notebook does not train anything. It loads the saved weights in `data/`, whi
 
 LRP is written from scratch for the CNN in the notebook and checked against the LRP of Captum. The notebook also checks that the cached maps are reproduced.
 
-## Notes on the setup
-
-- **The scaler is fitted on all 100 FD001 training engines**, before the split into training and validation engines. The effect is small, but the validation engines are not completely unseen by the scaler.
-- **The target of a window is the RUL of the cycle after the window**, not of its last cycle (`y = machine_data.iloc[i + window_size]['RUL']`). The test windows use the RUL file as given, so training and test targets differ by one cycle.
-- The performance numbers of FD002 to FD004 come from a separate training run (last section of `data_preprocessing.ipynb`), with slightly different settings for the hybrid model. Only FD001 uses the saved models.
-
 ---
 
 ## Models
